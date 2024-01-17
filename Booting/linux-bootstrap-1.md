@@ -254,7 +254,7 @@ X+08000  +------------------------+
 
 经过上面的一系列操作，我们终于进入到内核了。不过从技术上说，内核还没有被运行起来，因为首先我们需要正确设置内核，启动内存管理，进程管理等等。内核设置代码的运行起点是 [arch/x86/boot/header.S](http://lxr.free-electrons.com/source/arch/x86/boot/header.S?v=3.18) 中定义的 [_start](http://lxr.free-electrons.com/source/arch/x86/boot/header.S?v=3.18#L293) 函数。 在 `_start` 函数开始之前，还有很多的代码，那这些代码是做什么的呢？
 
-实际上 `_start` 开始之前的代码是 kenerl 自带的 bootloader。在很久以前，是可以使用这个 bootloader 来启动 Linux 的。不过在新的 Linux 中，这个 bootloader 代码已经不再启动 Linux 内核，而只是输出一个错误信息。 如果你运行下面的命令，直接使用 Linux 内核来启动，你会看到下图所示的错误：
+实际上 `_start` 开始之前的代码是 kernel 自带的 bootloader。在很久以前，是可以使用这个 bootloader 来启动 Linux 的。不过在新的 Linux 中，这个 bootloader 代码已经不再启动 Linux 内核，而只是输出一个错误信息。 如果你运行下面的命令，直接使用 Linux 内核来启动，你会看到下图所示的错误：
 
 ```
 qemu-system-x86_64 vmlinuz-3.18-generic
@@ -336,12 +336,12 @@ cs = 0x1020
 段寄存器设置
 --------------------------------------------------------------------------------
 
-在代码的一开始，就将 `ds` 和 `es` 段寄存器的内容设置成一样，并且使用指令 `sti` 来允许中断发生：
+首先，内核保证将 `ds` 和 `es` 段寄存器指向相同地址，随后，使用 `cld` 指令来清理方向标志位：
 
 ```assembly
 	movw	%ds, %ax
 	movw	%ax, %es
-	sti
+	cld
 ```
 
 就像我在上面一节中所写的， 为了能够跳转到 `_start` 标号出执行代码，grub2 将 `cs` 段寄存器的值设置成了 `0x1020`，这个值和其他段寄存器都是不一样的，因此下面的代码就是将 `cs` 段寄存器的值和其他段寄存器一致：
@@ -452,7 +452,7 @@ BSS 段用来存储那些没有被初始化的静态变量。对于这个段使�
 到目前为止，我们完成了堆栈和 BSS 的设置，现在我们可以正式跳入 `main()` 函数来执行 C 代码了：
 
 ```assembly
-	calll main
+	call main
 ```
 
 `main()` 函数定义在 [arch/x86/boot/main.c](http://lxr.free-electrons.com/source/arch/x86/boot/main.c?v=3.18)，我们将在下一章详细介绍这个函数做了什么事情。
