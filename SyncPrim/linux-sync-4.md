@@ -4,17 +4,16 @@
 引言
 --------------------------------------------------------------------------------
 
-这是本章的第四部分 [chapter](https://xinqiu.gitbooks.io/linux-insides-cn/content/SyncPrim/index.html) ，本章描述了内核中的同步原语，且在之前的部分我们介绍完了 [自旋锁](https://en.wikipedia.org/wiki/Spinlock) 和 [信号量](https://en.wikipedia.org/wiki/Semaphore_%28programming%29) 两种不同的同步原语。我们将在这个章节持续学习 [同步原语](https://en.wikipedia.org/wiki/Synchronization_%28computer_science%29)，并考虑另一简称 [互斥锁 (mutex)](https://en.wikipedia.org/wiki/Mutual_exclusion) 的同步原语，全名 `MUTual EXclusion`。
+这是本章的第四部分 [chapter](/SyncPrim/index.html) ，本章描述了内核中的同步原语，且在之前的部分我们介绍完了 [自旋锁](https://en.wikipedia.org/wiki/Spinlock) 和 [信号量](https://en.wikipedia.org/wiki/Semaphore_%28programming%29) 两种不同的同步原语。我们将在这个章节持续学习 [同步原语](https://en.wikipedia.org/wiki/Synchronization_%28computer_science%29)，并考虑另一简称 [互斥锁 (mutex)](https://en.wikipedia.org/wiki/Mutual_exclusion) 的同步原语，全名 `MUTual EXclusion`。
 
-
-与 [本书](https://xinqiu.gitbooks.io/linux-insides-cn/content) 前面所有章节一样，我们将先尝试从理论面来探究此同步原语，在此基础上再探究Linux内核所提供用来操作 `互斥锁` 的 [API](https://en.wikipedia.org/wiki/Application_programming_interface)。
+与 [本书](/) 前面所有章节一样，我们将先尝试从理论面来探究此同步原语，在此基础上再探究Linux内核所提供用来操作 `互斥锁` 的 [API](https://en.wikipedia.org/wiki/Application_programming_interface)。
 
 让我们开始吧。
 
 `互斥锁` 的概念
 --------------------------------------------------------------------------------
 
-从前一 [部分](https://xinqiu.gitbooks.io/linux-insides-cn/content/SyncPrim/linux-sync-3.html)，我们已经很熟悉同步原语 [信号量](https://en.wikipedia.org/wiki/Semaphore_%28programming%29)。其表示为：
+从前一 [部分](/SyncPrim/linux-sync-3.html)，我们已经很熟悉同步原语 [信号量](https://en.wikipedia.org/wiki/Semaphore_%28programming%29)。其表示为：
 
 ```C
 struct semaphore {
@@ -78,7 +77,7 @@ struct mutex_waiter {
 };
 ```
 
-此结构定义在[include/linux/mutex.h](https://github.com/torvalds/linux/blob/master/include/linux/mutex.h) 头文件，且使用上可能会被睡眠。在研究Linux内核提供用来操作 `互斥锁` 的 [API](https://en.wikipedia.org/wiki/Application_programming_interface) 前，让我们先研究 `mutex_waiter` 结构。如果你有阅读此章节的 [前一部分](https://xinqiu.gitbooks.io/linux-insides-cn/content/SyncPrim/linux-sync-3.html)，你可以能会注意到 `mutex_waiter` 结构与 [kernel/locking/semaphore.c](https://github.com/torvalds/linux/blob/master/kernel/locking/semaphore.c) 源代码中的 `semaphore_waiter` 结构相似：
+此结构定义在[include/linux/mutex.h](https://github.com/torvalds/linux/blob/master/include/linux/mutex.h) 头文件，且使用上可能会被睡眠。在研究Linux内核提供用来操作 `互斥锁` 的 [API](https://en.wikipedia.org/wiki/Application_programming_interface) 前，让我们先研究 `mutex_waiter` 结构。如果你有阅读此章节的 [前一部分](/SyncPrim/linux-sync-3.md)，你可以能会注意到 `mutex_waiter` 结构与 [kernel/locking/semaphore.c](https://github.com/torvalds/linux/blob/master/kernel/locking/semaphore.c) 源代码中的 `semaphore_waiter` 结构相似：
 
 ```C
 struct semaphore_waiter {
@@ -115,7 +114,7 @@ struct semaphore_waiter {
 }
 ```
 
-这个宏被定义在 [相同的](https://github.com/torvalds/linux/blob/master/include/linux/mutex.h) 头文件，并且我们可以了解到它初始化了 `mutex` 解构体中的字段。`count` 被初始化为 `1` ，这代表该互斥锁状态为 `无锁` 。`wait_lock` [自旋锁](https://en.wikipedia.org/wiki/Spinlock) 被初始化为无锁状态，而最后的栏位 `wait_list` 被初始化为空的 [双向列表](https://xinqiu.gitbooks.io/linux-insides-cn/content/DataStructures/linux-datastructures-1.html)。
+这个宏被定义在 [相同的](https://github.com/torvalds/linux/blob/master/include/linux/mutex.h) 头文件，并且我们可以了解到它初始化了 `mutex` 解构体中的字段。`count` 被初始化为 `1` ，这代表该互斥锁状态为 `无锁` 。`wait_lock` [自旋锁](https://en.wikipedia.org/wiki/Spinlock) 被初始化为无锁状态，而最后的栏位 `wait_list` 被初始化为空的 [双向列表](/DataStructures/linux-datastructures-1.md)。
 
 第二种做法允许我们动态初始化一个 `互斥锁`。为此我们需要调用在 [kernel/locking/mutex.c](https://github.com/torvalds/linux/blob/master/kernel/locking/mutex.c) 源码文件的 `__mutex_init` 函数。事实上，大家很少直接调用 `__mutex_init` 函数。取而代之，我们使用下面的 `mutex_init` :
 
@@ -160,7 +159,7 @@ static inline bool osq_is_locked(struct optimistic_spin_queue *lock)
 }
 ```
 
-在 `__mutex_init` 函数的结尾阶段，我们可以看到它调用了 `debug_mutex_init` 函数，不过就如同我在此 [章节](https://xinqiu.gitbooks.io/linux-insides-cn/content/SyncPrim/) 前面提到的那样，我们并不会在此章节讨论调试相关的内容。
+在 `__mutex_init` 函数的结尾阶段，我们可以看到它调用了 `debug_mutex_init` 函数，不过就如同我在此 [章节](/SyncPrim/) 前面提到的那样，我们并不会在此章节讨论调试相关的内容。
 
 在 `互斥锁` 结构被初始化后，我们可以继续研究 `互斥锁` 同步原语的 `上锁` 和 `解锁` API。`mutex_lock` 和 `mutex_unlock` 函数的实现位于 [kernel/locking/mutex.c](https://github.com/torvalds/linux/blob/master/kernel/locking/mutex.c) 源码文件。首先，让我们从 `mutex_lock` 的实现开始吧。代码如下:
 
@@ -177,7 +176,7 @@ void __sched mutex_lock(struct mutex *lock)
 
 在 `might_sleep` 宏之后，我们可以看到 `__mutex_fastpath_lock` 函数被调用。此函数是体系结构相关的，并且因为我们此书探讨的是 [x86_64](https://en.wikipedia.org/wiki/X86-64) 体系结构， \ `__mutex_fastpath_lock` 的实现部分位于 [arch/x86/include/asm/mutex_64.h](https://github.com/torvalds/linux/blob/master/arch/x86/include/asm/mutex_64.h) 头文件。正如我们从`__mutex_fastpath_lock` 函数名称可以理解的那样，此函数将尝试通过 fast path 试图获取一个锁，或者换句话说此函数试图递减一个给定互斥锁的 `count` 字段。
 
-`__mutex_fastpath_lock` 函数的实现由两部分组成。第一部分是 [内联汇编](https://xinqiu.gitbooks.io/linux-insides-cn/content/Theory/linux-theory-3.html) 。让我们看看:
+`__mutex_fastpath_lock` 函数的实现由两部分组成。第一部分是 [内联汇编](/Theory/linux-theory-3.md) 。让我们看看:
 
 ```C
 asm_volatile_goto(LOCK_PREFIX "   decl %0\n"
@@ -193,7 +192,7 @@ asm_volatile_goto(LOCK_PREFIX "   decl %0\n"
 #define asm_volatile_goto(x...) do { asm goto(x); asm (""); } while (0)
 ```
 
-第一个汇编包含 `goto` 特性，而第二个空的内联汇编是 [屏障 (barrier)](https://en.wikipedia.org/wiki/Memory_barrier)。现在回去看看我们的内联汇编。正如我们所看到的，它从被 `LOCK前缀` 的宏定义开始，该宏仅是扩展 [lock](http://x86.renejeschke.de/html/file_module_x86_id_159.html) 指令：
+第一个汇编包含 `goto` 特性，而第二个空的内联汇编是 [屏障 (barrier)](https://en.wikipedia.org/wiki/Memory_barrier)。现在回去看看我们的内联汇编。正如我们所看到的，它从被 `LOCK前缀` 的宏定义开始，该宏仅是扩展 [lock](https://x86.hust.openatom.club/html/file_module_x86_id_159.html) 指令：
 
 ```C
 #define LOCK_PREFIX LOCK_PREFIX_HERE "\n\tlock; "
@@ -403,14 +402,14 @@ if (!list_empty(&lock->wait_list)) {
 * `mutex_lock_killable`;
 * `mutex_trylock`.
 
-以及对应相同前缀的 `unlock` 函数. 我们就不在此解释这些 `API` 了, 因为他们跟 `信号量` 所提供的 `API` 类似。你可以通过阅读 [前一部分](https://xinqiu.gitbooks.io/linux-insides-cn/content/SyncPrim/linux-sync-3.html) 来了解更多。
+以及对应相同前缀的 `unlock` 函数. 我们就不在此解释这些 `API` 了, 因为他们跟 `信号量` 所提供的 `API` 类似。你可以通过阅读 [前一部分](/SyncPrim/linux-sync-3.md) 来了解更多。
 
 总结
 --------------------------------------------------------------------------------
 
 至此我们结束了Linux内核 [同步原语](https://en.wikipedia.org/wiki/Synchronization_%28computer_science%29) 章节的第四部分。在这部分我们见到了新的同步原语 - `互斥锁`。就理论上来说，此同步原语与 [信号量](https://en.wikipedia.org/wiki/Semaphore_%28programming%29) 非常相似。事实上，`互斥锁` 代表着二进制信号量。但它的实现与Linux内核中 `信号量` 实现并不同。在下一部分中，我们将继续深入研究Linux内核中的同步原语。
 
-如果你有问题或者建议，请在twitter [0xAX](https://twitter.com/0xAX)上联系我，通过 [email](mailto:anotherworldofworld@gmail.com) 联系我，或者创建一个[issue](https://github.com/MintCN/linux-insides-zh/issues/new)。
+如果你有问题或者建议，请在twitter [0xAX](https://twitter.com/0xAX)上联系我，通过 [email](mailto:anotherworldofworld@gmail.com) 联系我，或者创建一个[issue](https://github.com/hust-open-atom-club/linux-insides-zh/issues/new)。
 
 **Please note that English is not my first language and I am really sorry for any inconvenience. If you found any mistakes please send me PR to [linux-insides](https://github.com/0xAX/linux-insides).**
 
@@ -427,12 +426,12 @@ if (!list_empty(&lock->wait_list)) {
 * [lock validator](https://www.kernel.org/doc/Documentation/locking/lockdep-design.txt)
 * [Atomic](https://en.wikipedia.org/wiki/Linearizability)
 * [MCS lock](http://www.cs.rochester.edu/~scott/papers/1991_TOCS_synch.pdf)
-* [Doubly linked list](https://xinqiu.gitbooks.io/linux-insides-cn/content/DataStructures/linux-datastructures-1.html)
+* [Doubly linked list](/DataStructures/linux-datastructures-1.md)
 * [x86_64](https://en.wikipedia.org/wiki/X86-64)
-* [Inline assembly](https://xinqiu.gitbooks.io/linux-insides-cn/content/Theory/linux-theory-3.html)
+* [Inline assembly](/Theory/linux-theory-3.md)
 * [Memory barrier](https://en.wikipedia.org/wiki/Memory_barrier)
-* [Lock instruction](http://x86.renejeschke.de/html/file_module_x86_id_159.html)
+* [Lock instruction](https://x86.hust.openatom.club/html/file_module_x86_id_159.html)
 * [JNS instruction](http://unixwiz.net/techtips/x86-jumps.html)
 * [preemption](https://en.wikipedia.org/wiki/Preemption_%28computing%29)
 * [Unix signals](https://en.wikipedia.org/wiki/Unix_signal)
-* [Previous part](https://xinqiu.gitbooks.io/linux-insides-cn/content/SyncPrim/linux-sync-3.html)
+* [Previous part](/SyncPrim/linux-sync-3.md)

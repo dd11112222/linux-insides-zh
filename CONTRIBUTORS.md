@@ -36,7 +36,7 @@
 
 [@woodpenker](http://github.com/woodpenker)
 
-[@tjm-1990](http://github.com/tjm-1990)
+@tjm-1990
 
 [@up2wing](https://github.com/up2wing)
 
@@ -44,6 +44,10 @@
 
 [@narcijie](https://github.com/narcijie)
 
+[@biopuppet](https://github.com/biopuppet)
+
 [@Albertchamberlain](https://github.com/Albertchamberlain)
 
-[@nannxnann](https://github.com/nannxnann)
+@nannxnann
+
+[@chenhr56](https://github.com/chenhr56)

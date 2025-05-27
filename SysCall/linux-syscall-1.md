@@ -4,14 +4,14 @@ Linux 内核系统调用 第一节
 简介
 --------------------------------------------------------------------------------
 
-这次提交为 [linux内核解密](http://xinqiu.gitbooks.io/linux-insides-cn/content/) 添加一个新的章节，从标题就可以知道, 这一章节将介绍Linux 内核中 [System Call](https://en.wikipedia.org/wiki/System_call) 的概念。章节内容的选择并非偶然。在前一[章节](http://xinqiu.gitbooks.io/linux-insides-cn/content/Interrupts/index.html)我们了解了中断及中断处理。系统调用的概念与中断非常相似，这是因为软件中断是执行系统调用最常见的方式。接下来我们将从不同的角度来审视系统调用相关概念。例如，从用户空间发起系统调用时会发生什么，Linux内核中一组系统调用处理器的实现，[VDSO](https://en.wikipedia.org/wiki/VDSO) 和 [vsyscall](https://lwn.net/Articles/446528/) 的概念以及其他信息。
+这次提交为 [linux内核解密](/) 添加一个新的章节，从标题就可以知道, 这一章节将介绍Linux 内核中 [System Call](https://en.wikipedia.org/wiki/System_call) 的概念。章节内容的选择并非偶然。在前一[章节](/Interrupts/)我们了解了中断及中断处理。系统调用的概念与中断非常相似，这是因为软件中断是执行系统调用最常见的方式。接下来我们将从不同的角度来审视系统调用相关概念。例如，从用户空间发起系统调用时会发生什么，Linux内核中一组系统调用处理器的实现，[VDSO](https://en.wikipedia.org/wiki/VDSO) 和 [vsyscall](https://lwn.net/Articles/446528/) 的概念以及其他信息。
 
 在了解 Linux 内核系统调用执行过程之前，让我们先来了解一些系统调用的相关原理。
 
 什么是系统调用?
 --------------------------------------------------------------------------------
 
-系统调用就是从用户空间发起的内核服务请求。操作系统内核其实会提供很多服务，比如当程序想要读写文件、监听某个[socket](https://en.wikipedia.org/wiki/Network_socket)端口、删除或创建目录或者程序结束时，都会执行系统调用。换句话说，系统调用其实就是一些由用户空间程序调用去处理某些请求的 [C] (https://en.wikipedia.org/wiki/C_%28programming_language%29) 内核空间函数。
+系统调用就是从用户空间发起的内核服务请求。操作系统内核其实会提供很多服务，比如当程序想要读写文件、监听某个[socket](https://en.wikipedia.org/wiki/Network_socket)端口、删除或创建目录或者程序结束时，都会执行系统调用。换句话说，系统调用其实就是一些由用户空间程序调用去处理某些请求的 [C](https://en.wikipedia.org/wiki/C_%28programming_language%29) 内核空间函数。
 
 Linux 内核提供一系列的函数，但这些函数与CPU架构相关。 例如：[x86_64](https://en.wikipedia.org/wiki/X86-64) 提供 [322](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl) 个系统调用，[x86](https://en.wikipedia.org/wiki/X86) 提供 [358](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_32.tbl) 个不同的系统调用。
 系统调用仅仅是一些函数。 我们看一个使用汇编语言编写的简单 `Hello world` 示例:
@@ -85,7 +85,7 @@ wrmsrl(MSR_LSTAR, entry_SYSCALL_64);
 *  参数字符串指针 　　
 * 数据的大小 　　
 
-是的，你没有看错，这就是系统调用的参数。正如上文所示, 系统调用仅仅是内核空间的 `C` 函数。示例中第一个系统调用为 write ，在 [fs/read_write.c] (https://github.com/torvalds/linux/blob/master/fs/read_write.c) 源文件中定义如下:
+是的，你没有看错，这就是系统调用的参数。正如上文所示, 系统调用仅仅是内核空间的 `C` 函数。示例中第一个系统调用为 write ，在 [fs/read_write.c](https://github.com/torvalds/linux/blob/master/fs/read_write.c) 源文件中定义如下:
 
 ```C
 SYSCALL_DEFINE3(write, unsigned int, fd, const char __user *, buf,
@@ -121,7 +121,7 @@ _exit(0)                                = ?
 +++ exited with 0 +++
 ```
 
- `strace` 输出的第一行, [execve](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl#L68) 系统调用来执行程序，第二、三行为程序中使用的系统调用: `write` 和 `exit`。注意示例中通过通用目的寄存器传递系统调用的参数。寄存器的顺序是指定的，该顺序在- [x86-64 calling conventions] (https://en.wikipedia.org/wiki/X86_calling_conventions#x86-64_calling_conventions)中定义。
+ `strace` 输出的第一行, [execve](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl#L68) 系统调用来执行程序，第二、三行为程序中使用的系统调用: `write` 和 `exit`。注意示例中通过通用目的寄存器传递系统调用的参数。寄存器的顺序是指定的，该顺序在- [x86-64 calling conventions](https://en.wikipedia.org/wiki/X86_calling_conventions#x86-64_calling_conventions)中定义。
  `x86_64` 架构的声明在另一个特别的文档中 - [System V Application Binary Interface. PDF](http://www.x86-64.org/documentation/abi.pdf)。通常，函数参数被置于寄存器或者堆栈中。正确的顺序为:
 
 * `rdi` 
@@ -330,7 +330,7 @@ SYSCALL_DEFINE3(write, unsigned int, fd, const char __user *, buf,
 * `buf` - 写缓冲区
 * `count` - 写缓冲区大小
 
-该调用的功能是将用户定义的缓冲中的数据写入指定的设备或文件。注意第二个参数 `buf`, 定义了 `__user` 属性。该属性的主要目的是通过 [sparse](https://en.wikipedia.org/wiki/Sparse) 工具检查 Linux 内核代码。sparse 定义于 [include/linux/compiler.h] (https://github.com/torvalds/linux/blob/master/include/linux/compiler.h) 头文件中，并依赖 Linux 内核中 `__CHECKER__` 的定义。以上全是关于 `sys_write` 系统调用的有用元信息。我们可以看到，它的实现开始于 `f` 结构的定义，`f` 结构包含 `fd` 结构类型，`fd`是 Linux 内核中的文件描述符，也是我们存放 `fdget_pos` 函数调用结果的地方。`fdget_pos` 函数在相同的[源文件](https://github.com/torvalds/linux/blob/master/fs/read_write.c)中定义，其实就是 `__to_fd` 函数的扩展:
+该调用的功能是将用户定义的缓冲中的数据写入指定的设备或文件。注意第二个参数 `buf`, 定义了 `__user` 属性。该属性的主要目的是通过 [sparse](https://en.wikipedia.org/wiki/Sparse) 工具检查 Linux 内核代码。sparse 定义于 [include/linux/compiler.h](https://github.com/torvalds/linux/blob/master/include/linux/compiler.h) 头文件中，并依赖 Linux 内核中 `__CHECKER__` 的定义。以上全是关于 `sys_write` 系统调用的有用元信息。我们可以看到，它的实现开始于 `f` 结构的定义，`f` 结构包含 `fd` 结构类型，`fd`是 Linux 内核中的文件描述符，也是我们存放 `fdget_pos` 函数调用结果的地方。`fdget_pos` 函数在相同的[源文件](https://github.com/torvalds/linux/blob/master/fs/read_write.c)中定义，其实就是 `__to_fd` 函数的扩展:
 
 ```C
 static inline struct fd fdget_pos(int fd)
@@ -379,9 +379,9 @@ fdput_pos(f);
   
 第一部分介绍了Linux内核中的系统调用概念。到目前为止，我们已经介绍了系统调用的理论，在下一部分中，我们将继续深入这个主题，讨论与系统调用相关的Linux内核代码。  
 
-若存在疑问及建议, 在twitter @[0xAX](https://twitter.com/0xAX), 通过[email](anotherworldofworld@gmail.com) 或者创建 [issue](https://github.com/MintCN/linux-insides-zh/issues/new).
+若存在疑问及建议, 在twitter @[0xAX](https://twitter.com/0xAX), 通过[email](mailto:anotherworldofworld@gmail.com) 或者创建 [issue](https://github.com/hust-open-atom-club/linux-insides-zh/issues/new).
 
-**由于英语是我的第一语言由此造成的不便深感抱歉。若发现错误请提交 PR 至 [linux-insides](https://github.com/MintCN/linux-insides-zh).**
+**由于英语是我的第一语言由此造成的不便深感抱歉。若发现错误请提交 PR 至 [linux-insides](https://github.com/hust-open-atom-club/linux-insides-zh).**
 
 链接
 --------------------------------------------------------------------------------
@@ -411,4 +411,4 @@ fdput_pos(f);
 * [Virtual file system](https://en.wikipedia.org/wiki/Virtual_file_system)
 * [systemd](https://en.wikipedia.org/wiki/Systemd)
 * [epoll](https://en.wikipedia.org/wiki/Epoll)
-* [Previous chapter](http://xinqiu.gitbooks.io/linux-insides-cn/content/Interrupts/index.html)
+* [Previous chapter](/Interrupts/)
