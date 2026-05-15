@@ -5,7 +5,7 @@
 |章节|译者|翻译进度|
 | ------------- |:-------------:| -----:|
 | 1. [Booting](Booting)||已完成|
-|├ [1.0](Booting/README.md)|[@xinqiu](https://github.com/xinqiu)|更新至[527b2b8921c3](https://github.com/0xAX/linux-insides/commit/527b2b8921c3d9c043bd914c5990d6a991e3035b)|
+|├ [1.0](Booting/README.md)|[@yeying-xingchen](https://github.com/yeying-xingchen)|更新至[40fb0c6](https://github.com/0xAX/linux-insides/commit/40fb0c66dfbc3721955c62b98a3a89c35646f6a4)|
 |├ [1.1](Booting/linux-bootstrap-1.md)|[@hailincai](https://github.com/hailincai)|已完成|
 |├ [1.2](Booting/linux-bootstrap-2.md)|[@hailincai](https://github.com/hailincai)|已完成|
 |├ [1.3](Booting/linux-bootstrap-3.md)|[@hailincai](https://github.com/hailincai)|已完成|
@@ -13,7 +13,7 @@
 |├ [1.5](Booting/linux-bootstrap-5.md)|[@mytbk](https://github.com/mytbk)|更新至[31998d14320f](https://github.com/0xAX/linux-insides/commit/31998d14320f25399d67d4fff446a65178931e90)|
 |└ [1.6](Booting/linux-bootstrap-6.md)|[@mytbk](https://github.com/mytbk)|更新至[31998d14320f](https://github.com/0xAX/linux-insides/commit/31998d14320f25399d67d4fff446a65178931e90)|
 | 2. [Initialization](Initialization)||正在进行|
-|├ [2.0](Initialization/README.md)|[@mudongliang](https://github.com/mudongliang)|更新至[4401750766f7](https://github.com/0xAX/linux-insides/commit/4401750766f7150dcd16f579026f5554541a6ab9)|
+|├ [2.0](Initialization/README.md)|[@yeying-xingchen](https://github.com/yeying-xingchen)|更新至[c2ecc33](https://github.com/0xAX/linux-insides/commit/c2ecc331a0757360c6c8262af1efc392515510f7)|
 |├ [2.1](Initialization/linux-initialization-1.md)|[@dontpanic92](https://github.com/dontpanic92)|更新至[4401750766f7](https://github.com/0xAX/linux-insides/commit/4401750766f7150dcd16f579026f5554541a6ab9)|
 |├ [2.2](Initialization/linux-initialization-2.md)|[@dontpanic92](https://github.com/dontpanic92)|更新至[4401750766f7](https://github.com/0xAX/linux-insides/commit/4401750766f7150dcd16f579026f5554541a6ab9)|
 |├ [2.3](Initialization/linux-initialization-3.md)|[@dontpanic92](https://github.com/dontpanic92)|更新至[4401750766f7](https://github.com/0xAX/linux-insides/commit/4401750766f7150dcd16f579026f5554541a6ab9)|
@@ -21,14 +21,14 @@
 |├ [2.5](Initialization/linux-initialization-5.md)|[@NeoCui](https://github.com/NeoCui)|更新至[cf32dc6c81ab](https://github.com/0xAX/linux-insides/commit/cf32dc6c81abce567af330c480afc3d58678443d)|
 |├ [2.6](Initialization/linux-initialization-6.md)|[@kele1997](https://github.com/kele1997)|更新至[e896e56c867](https://github.com/0xAX/linux-insides/commit/e896e56c867876397ef78da58d5e2a31b2e690b6)|
 |├ [2.7](Initialization/linux-initialization-7.md)|[@chenhr56](https://github.com/chenhr56)|更新至[20ee3691a418](https://github.com/0xAX/linux-insides/commit/20ee3691a41889b95feae6fe0964e94e72a1b8d0)|
-|├ [2.8](Initialization/linux-initialization-8.md)||未开始|
+|├ [2.8](Initialization/linux-initialization-8.md)|[@chenhr56](https://github.com/chenhr56)|已完成|
 |├ [2.9](Initialization/linux-initialization-9.md)||未开始|
 |└ [2.10](Initialization/linux-initialization-10.md)||未开始|
 | 3. [Interrupts](Interrupts)||正在进行|
 |├ [3.0](Interrupts/README.md)|[@littleneko](https://github.com/littleneko)|更新至[5727932167a2](https://github.com/0xAX/linux-insides/commit/5727932167a2ff6a1e647081c85d081d4ed8b508)|
 |├ [3.1](Interrupts/linux-interrupts-1.md)|[@Albertchamberlain](https://github.com/Albertchamberlain)|更新至[e58c06bfca60](https://github.com/0xAX/linux-insides/commit/e58c06bfca60d4af25d92562de1ee9959992fc68)|
 |├ [3.2](Interrupts/linux-interrupts-2.md)|[@narcijie](https://github.com/narcijie)|更新至[4d6351172486](https://github.com/0xAX/linux-insides/commit/4d6351172486e5c046a7d3db2286fc0d0d0d7789)|
-|├ [3.3](Interrupts/linux-interrupts-3.md)||未开始|
+|├ [3.3](Interrupts/linux-interrupts-3.md)|[@ttttyy](https://github.com/ttttyy)|更新至[17a0d7bfbc48](https://github.com/0xAX/linux-insides/commit/17a0d7bfbc482ec1f7e3b7d8b9d279a632d7368b)|
 |├ [3.4](Interrupts/linux-interrupts-4.md)||未开始|
 |├ [3.5](Interrupts/linux-interrupts-5.md)||未开始|
 |├ [3.6](Interrupts/linux-interrupts-6.md)||未开始|
